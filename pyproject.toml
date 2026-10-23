@@ -1,0 +1,33 @@
+[project]
+name = "wedding-platform"
+version = "0.1.0"
+description = "Lokale Grundlage einer mandantengetrennten Hochzeitsplattform"
+requires-python = ">=3.13,<3.15"
+dependencies = [
+  "Django>=5.2.8,<5.3",
+  "argon2-cffi>=25.1,<26",
+  "gunicorn>=23,<28",
+  "psycopg[binary]>=3.2,<4",
+  "whitenoise>=6.9,<7",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --tb=short"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [".cache", ".venv", "secrets", "staticfiles"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "S608"]
+"apps/*/migrations/*" = ["E501"]
+"scripts/dev.py" = ["S603", "S607"]

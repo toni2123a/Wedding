@@ -1,0 +1,762 @@
+# Hochzeitsplattform – Erweiterte Funktionsanforderungen
+
+**Dokumenttyp:** Funktionales Lastenheft  
+**Version:** 1.0  
+**Status:** Konzept / Entwicklungsgrundlage  
+**Ziel:** Integration von sechs zusätzlichen Modulen in die zentrale Hochzeitsplanungsplattform.
+
+---
+
+# 1. Grundlegende Systemanforderungen
+
+Die Plattform wird als modular aufgebaute, responsive Webanwendung entwickelt. Jede Hochzeit besitzt einen eigenen, logisch getrennten Datenbereich.
+
+## 1.1 Benutzerrollen
+
+| Rolle | Berechtigungen |
+|---|---|
+| Brautpaar – Administrator | Vollzugriff auf die eigene Hochzeit |
+| Mitplaner | Freigegebene Planungsbereiche bearbeiten |
+| Trauzeuge | Zugewiesene Aufgaben und Abläufe verwalten |
+| Hochzeitsgast | Persönliche Gästefunktionen verwenden |
+| Dienstleister | Explizit freigegebene Angebote und Ablaufdetails sehen |
+| Plattformadministrator | Technische und administrative Plattformverwaltung |
+
+**Anforderung SYS-001:** Sämtliche Module müssen dasselbe Rollen- und Berechtigungssystem verwenden.
+
+**SYS-002:** Jeder Datensatz muss einer Hochzeit zugeordnet werden können.
+
+**SYS-003:** Persönliche Daten dürfen ausschließlich nach Prüfung der jeweiligen Berechtigung ausgegeben werden. Das gilt auch für direkte API-Aufrufe und Dateidownloads.
+
+**SYS-004:** Änderungen an kritischen Informationen werden mit Benutzer, Zeitstempel und Änderungsart protokolliert.
+
+**SYS-005:** Die Plattform muss auf Smartphone, Tablet und Desktop nutzbar sein.
+
+**SYS-006:** Automatisierte Entscheidungen mit finanziellen oder organisatorischen Konsequenzen müssen vor ihrer verbindlichen Ausführung bestätigt werden.
+
+---
+
+# 2. Modul WP-01: KI-Angebotsvergleich
+
+## 2.1 Zielsetzung
+
+Das Modul ermöglicht dem Brautpaar, Angebote unterschiedlicher Dienstleister hochzuladen, automatisiert auszuwerten und strukturiert zu vergleichen.
+
+Der Nutzer soll Leistungsunterschiede erkennen können, ohne mehrere umfangreiche PDF-Dokumente manuell vergleichen zu müssen.
+
+## 2.2 Funktionsumfang
+
+### WP01-F001 – Dokumentenupload
+
+Unterstützte Formate:
+
+- PDF
+- JPG, JPEG und PNG für eingescannte Angebote
+- Weitere Formate optional in späteren Versionen
+
+Jedes Dokument erhält eine eindeutige ID, einen Anbieterbezug, ein Upload-Datum und einen Verarbeitungsstatus.
+
+### WP01-F002 – Automatische Datenextraktion
+
+Folgende Informationen sollen nach Möglichkeit erkannt werden:
+
+| Datenfeld | Beschreibung |
+|---|---|
+| Dienstleister | Name und Kontaktdaten |
+| Angebotsnummer | Falls vorhanden |
+| Angebotsdatum | Ausstellungsdatum |
+| Gültigkeitsdatum | Ablauf der Angebotsbindung |
+| Gesamtpreis | Inklusive Währung |
+| Netto-/Bruttowerte | Soweit ausgewiesen |
+| Umsatzsteuer | Ausgewiesener Betrag bzw. Steuersatz |
+| Leistungspositionen | Einzelne angebotene Leistungen |
+| Menge und Einheit | Stunden, Personen, Stückzahlen |
+| Zusatzkosten | Anfahrt, Reinigung, Aufbau usw. |
+| Zahlungsbedingungen | Anzahlungen und Fälligkeiten |
+| Stornobedingungen | Ausgewiesene Vertragsbedingungen |
+| Einschränkungen | Nicht enthaltene Leistungen |
+
+Nicht erkannte Informationen werden als „Nicht angegeben“ gekennzeichnet und niemals automatisch mit erfundenen Werten ergänzt.
+
+### WP01-F003 – Vergleichsansicht
+
+Das System stellt mindestens zwei und vorzugsweise bis zu fünf Angebote nebeneinander dar.
+
+Beispiel:
+
+| Kriterium | Fotograf A | Fotograf B |
+|---|---|---|
+| Gesamtpreis | 1.800 € | 2.100 € |
+| Begleitung | 6 Stunden | 10 Stunden |
+| Bearbeitete Bilder | 300 | 500 |
+| Fotobuch | Nicht enthalten | Enthalten |
+| Anfahrt | Zusätzlich | Inklusive |
+| Anzahlung | 30 % | 20 % |
+
+### WP01-F004 – KI-Analyse
+
+Die KI kann:
+
+- Fehlende oder unklare Leistungsangaben hervorheben.
+- Unterschiede bei Leistungsumfang und Zusatzkosten erläutern.
+- Offene Fragen an Dienstleister formulieren.
+- Angebote anhand individuell gewichteter Kriterien gegenüberstellen.
+- Kosten pro Gast, Stunde oder Leistungseinheit berechnen, sofern die erforderlichen Angaben vorliegen.
+
+Eine Empfehlung muss die zugrunde gelegten Kriterien offenlegen.
+
+### WP01-F005 – Nachvollziehbarkeit
+
+Jeder extrahierte Wert erhält einen Verweis auf das Ursprungsdokument und möglichst die entsprechende Seite oder Textstelle.
+
+KI-Ergebnisse müssen vom Nutzer korrigiert werden können.
+
+### WP01-F006 – Budgetintegration
+
+Nach Bestätigung eines Angebots können dessen Kosten in den zentralen Budgetplan übernommen werden.
+
+Zahlungsfristen werden als vorgeschlagene Erinnerungen angelegt.
+
+### WP01-F007 – Angebotsstatus
+
+Mögliche Zustände:
+
+`Hochgeladen → Analysiert → Geprüft → In Auswahl → Angenommen / Abgelehnt`
+
+Der Status „Angenommen“ bedeutet zunächst nur eine dokumentierte Entscheidung des Brautpaares. Eine rechtlich verbindliche Beauftragung erfolgt nicht automatisch.
+
+## 2.3 Technische Anforderungen
+
+- Malware-Prüfung und sichere Dokumentenspeicherung.
+- Serverseitige Dateityp- und Größenvalidierung.
+- Texterkennung für gescannte Dokumente.
+- Strukturierte KI-Ausgabe mit Schema-Validierung.
+- Speicherung des Originaldokuments und der korrigierbaren Extraktion.
+- Verarbeitung über Hintergrundaufträge.
+- Keine Ausführung eingebetteter Dokumenteninhalte.
+- Löschfunktion einschließlich verknüpfter Analysedaten.
+- Konfigurierbare Dateigrößen- und Aufbewahrungsgrenzen.
+
+## 2.4 Abnahmekriterien
+
+1. Zwei PDF-Angebote lassen sich hochladen und vergleichen.
+2. Unterschiede in Preis und Leistungsumfang werden hervorgehoben.
+3. Fehlende Werte werden nicht geschätzt.
+4. Der Nutzer kann fehlerhafte KI-Erkennungen korrigieren.
+5. Ein bestätigter Angebotspreis lässt sich in das Budget übernehmen.
+6. Unberechtigte Benutzer können Angebote weder abrufen noch herunterladen.
+7. Dokumente mit fehlerhaftem Format werden sicher abgewiesen.
+
+---
+
+# 3. Modul WP-02: Schlechtwetter-Plan B
+
+## 3.1 Zielsetzung
+
+Das Modul soll für Hochzeiten mit Außenveranstaltungen frühzeitig alternative Abläufe vorbereiten und die Umstellung bei ungünstigen Wetterbedingungen vereinfachen.
+
+## 3.2 Funktionsumfang
+
+### WP02-F001 – Wetterabhängige Programmpunkte
+
+Jeder Programmpunkt erhält optional folgende Informationen:
+
+- Veranstaltungsort
+- Innen- oder Außenveranstaltung
+- Beginn und Ende
+- Wetterabhängigkeit
+- Erforderliche Ausstattung
+- Verantwortliche Person
+- Ausweichort
+
+### WP02-F002 – Plan-B-Szenarien
+
+Das Brautpaar kann mehrere Szenarien definieren:
+
+- Regen
+- Starker Wind
+- Extreme Hitze
+- Gewitter
+- Kälte
+
+Jedem Szenario werden alternative Abläufe, Aufgaben, Ansprechpartner und Ausrüstungsgegenstände zugeordnet.
+
+### WP02-F003 – Wetterdatenintegration
+
+Die Plattform kann einen externen Wetterdienst anbinden.
+
+Angezeigt werden:
+
+- Wettervorhersage
+- Niederschlagswahrscheinlichkeit
+- Temperatur
+- Windgeschwindigkeit
+- Amtliche Wetterwarnungen, sofern verfügbar
+
+Die verwendete Quelle und die Aktualisierungszeit müssen sichtbar sein.
+
+### WP02-F004 – Risikohinweise
+
+Das System vergleicht Wetterdaten mit individuell konfigurierten Schwellenwerten.
+
+Beispiel: Bei einer vom Nutzer festgelegten Niederschlagswahrscheinlichkeit wird eine Überprüfung der Outdoor-Trauung vorgeschlagen.
+
+Die Schwellenwerte sind Planungshilfen, keine verbindlichen meteorologischen Sicherheitsgrenzen.
+
+### WP02-F005 – Aktivierung eines Alternativplans
+
+Das Brautpaar oder eine entsprechend berechtigte Person kann Plan B aktivieren.
+
+Vor der Aktivierung wird eine Änderungsübersicht angezeigt:
+
+- Betroffene Programmpunkte
+- Zeitverschiebungen
+- Geänderte Veranstaltungsorte
+- Betroffene Dienstleister
+- Offene Aufgaben
+- Vorgesehene Benachrichtigungen
+
+Die Aktivierung muss ausdrücklich bestätigt werden.
+
+### WP02-F006 – Kommunikation
+
+Nach Freigabe können gezielte Nachrichten an Gäste und Dienstleister versendet werden.
+
+Beispiel:
+
+„Die freie Trauung findet wetterbedingt im Veranstaltungssaal statt.“
+
+## 3.3 Integration
+
+Das Modul greift auf Tagesablauf, Aufgabenverwaltung, Kontakte, Gästekommunikation und Dienstleistermanagement zu.
+
+Änderungen müssen in den freigegebenen Ansichten sichtbar werden.
+
+## 3.4 Abnahmekriterien
+
+1. Für eine Outdoor-Trauung lässt sich ein Ausweichort festlegen.
+2. Mindestens zwei alternative Szenarien können gespeichert werden.
+3. Die Aktivierung eines Plans zeigt alle betroffenen Elemente vorab an.
+4. Änderungen werden nach Bestätigung übernommen.
+5. Benachrichtigungen werden ausschließlich an berechtigte Empfänger versendet.
+6. Ein bestehender Ablauf kann versioniert und gegebenenfalls wiederhergestellt werden.
+
+---
+
+# 4. Modul WP-03: Hochzeits-Notfallmodus
+
+## 4.1 Zielsetzung
+
+Bei unvorhergesehenen Ereignissen sollen wichtige Informationen sofort verfügbar sein und die Organisation des Hochzeitstags erleichtert werden.
+
+## 4.2 Funktionsumfang
+
+### WP03-F001 – Notfall-Dashboard
+
+Ein gesonderter Bereich zeigt:
+
+- Aktuellen Veranstaltungsort
+- Notfallkontakte
+- Zuständige Ansprechpartner
+- Freigegebene wichtige Dokumente
+- Aktuellen Tagesablauf
+- Ersatzdienstleister
+- Offene dringende Aufgaben
+
+### WP03-F002 – Kontaktverwaltung
+
+Kontakte können Kategorien erhalten:
+
+- Medizinische Hilfe und öffentliche Notrufnummern
+- Location-Verantwortliche
+- Trauzeugen
+- Caterer
+- Fotograf
+- Transport
+- Technischer Support
+- Ersatzdienstleister
+
+Telefonnummern müssen auf Mobilgeräten direkt anwählbar sein.
+
+### WP03-F003 – Ereignisvorlagen
+
+Vordefinierte Ereignisse:
+
+- Dienstleister erscheint nicht.
+- Trauung verzögert sich.
+- Fahrzeug fällt aus.
+- Technische Anlage fällt aus.
+- Location muss gewechselt werden.
+- Ein medizinischer Notfall tritt ein.
+
+Für jedes Ereignis können Checklisten und Ansprechpartner hinterlegt werden.
+
+### WP03-F004 – Ersatzdienstleister
+
+Für wichtige Dienstleister können Ersatzkontakte und bereits abgestimmte Verfügbarkeiten eingetragen werden.
+
+Ein gespeicherter Ersatzkontakt darf nicht automatisch als tatsächlich verfügbar dargestellt werden.
+
+### WP03-F005 – Offline-Notfallinformationen
+
+Ein vorher ausdrücklich aktiviertes Offline-Paket kann ausgewählte Informationen lokal auf einem Gerät bereitstellen.
+
+Dazu zählen Kontakte, Treffpunkte, Ablaufpläne und freigegebene Dokumente.
+
+Sensible Inhalte werden auf ein Minimum begrenzt. Die Benutzeroberfläche muss auf das Risiko lokal gespeicherter Informationen hinweisen.
+
+### WP03-F006 – Ablaufänderungen
+
+Bei einem Ereignis können:
+
+- Aufgaben erstellt werden.
+- Programmpunkte verschoben werden.
+- Verantwortlichkeiten geändert werden.
+- Betroffene Personen benachrichtigt werden.
+
+Sämtliche Änderungen werden protokolliert.
+
+## 4.3 Sicherheitsanforderungen
+
+- Der Notfallmodus darf keine Berechtigungsprüfung umgehen.
+- Besonders sensible Dokumente sind gesondert freizugeben.
+- Offline-Daten müssen möglichst verschlüsselt gespeichert und zeitlich begrenzt werden.
+- Ein Notfallmodus ersetzt weder öffentliche Notrufsysteme noch professionelle Gefahrenabwehr.
+
+## 4.4 Abnahmekriterien
+
+1. Das Notfall-Dashboard ist auf dem Smartphone schnell erreichbar.
+2. Kontakte lassen sich direkt anwählen.
+3. Ein Ersatzdienstleister kann einem kritischen Dienstleister zugeordnet werden.
+4. Ein Notfallereignis erzeugt eine vorbereitete Aufgabenliste.
+5. Kritische Änderungen erfordern eine Bestätigung.
+6. Berechtigungen gelten auch im Notfallmodus.
+
+---
+
+# 5. Modul WP-04: Digitale Hochzeitspost
+
+## 5.1 Zielsetzung
+
+Gäste können dem Brautpaar persönliche Nachrichten übermitteln. Diese werden wahlweise sofort oder zu einem festgelegten Zeitpunkt freigeschaltet.
+
+## 5.2 Funktionsumfang
+
+### WP04-F001 – Nachrichtenformate
+
+Unterstützte Inhalte:
+
+- Textnachrichten
+- Sprachnachrichten
+- Videobotschaften
+- Fotos mit persönlicher Nachricht
+
+### WP04-F002 – Zugang
+
+Der Zugriff erfolgt über einen persönlichen Einladungslink oder QR-Code.
+
+Gäste benötigen kein eigenes Benutzerkonto.
+
+Es müssen Maßnahmen gegen automatisierte Uploads und missbräuchliche Nutzung vorhanden sein.
+
+### WP04-F003 – Zeitgesteuerte Freigabe
+
+Verfügbare Freigabeoptionen:
+
+- Sofort
+- Am Hochzeitstag
+- Während eines bestimmten Programmpunkts
+- Am ersten Hochzeitstag
+- Zu einem individuell festgelegten Datum
+
+### WP04-F004 – Privat oder öffentlich
+
+Beim Hochladen kann festgelegt werden, ob eine Nachricht:
+
+- Nur vom Brautpaar angesehen werden darf.
+- Nach Freigabe in der gemeinsamen Galerie erscheinen darf.
+
+Öffentliche Veröffentlichungen benötigen eine bewusste Auswahl beziehungsweise Einwilligung.
+
+### WP04-F005 – Moderation
+
+Das Brautpaar kann Inhalte:
+
+- Freigeben
+- Ausblenden
+- Löschen
+- Herunterladen
+
+### WP04-F006 – Erinnerungsfunktion
+
+Die Plattform kann am Jahrestag die dafür vorgesehenen Nachrichten freischalten und das Paar benachrichtigen.
+
+Bei nicht zugestellter Benachrichtigung bleibt der Inhalt im persönlichen Archiv abrufbar.
+
+## 5.3 Technische Anforderungen
+
+- Medienkonvertierung für unterstützte Browserformate.
+- Sichere Dateiuploads.
+- Größen- und Laufzeitbegrenzungen.
+- Speicherkontingente je Hochzeit.
+- Geschützte Abruflinks.
+- Asynchrone Videoverarbeitung.
+- Definierte Aufbewahrungs- und Löschfristen.
+- Berücksichtigung der Zeitzone des Hochzeitspaares.
+
+## 5.4 Abnahmekriterien
+
+1. Ein Gast kann ohne Registrierung eine Textnachricht hinterlassen.
+2. Eine Audio- oder Videobotschaft lässt sich hochladen.
+3. Eine zeitgesteuerte Nachricht ist vor dem Freigabedatum nicht abrufbar.
+4. Private Inhalte erscheinen nicht in öffentlichen Galerien.
+5. Nachrichten können vom berechtigten Paar exportiert und gelöscht werden.
+6. Ein abgelaufener oder ungültiger Zugangslink wird abgewiesen.
+
+---
+
+# 6. Modul WP-05: Kinder- und Betreuungskonzept
+
+## 6.1 Zielsetzung
+
+Das Modul berücksichtigt Kinder als eigene Teilnehmergruppe und hilft bei der Planung von Sitzplätzen, Betreuung, Ausstattung und Programm.
+
+## 6.2 Funktionsumfang
+
+### WP05-F001 – Kinder in der Gästeliste
+
+Kinder werden einer Familie oder Einladung zugeordnet.
+
+Mögliche Angaben:
+
+- Anzeigename
+- Altersgruppe oder optionales Alter
+- Zugehörige Begleitpersonen
+- Sitzplatzbedarf
+- Hochstuhlbedarf
+- Kinderessen
+- Betreuungsbedarf
+- Relevante Hinweise, soweit erforderlich
+
+Es sollen nur tatsächlich benötigte Daten erhoben werden.
+
+### WP05-F002 – Ausstattung
+
+Das System berechnet anhand der bestätigten Gäste den Bedarf für:
+
+- Hochstühle
+- Kinderstühle
+- Wickelmöglichkeiten
+- Kindergerichte
+- Spiel- und Beschäftigungsmaterial
+- Ruhebereiche
+
+### WP05-F003 – Betreuung
+
+Das Brautpaar kann Betreuungszeiten, Betreuungspersonen, Betreuungskapazitäten und Zuständigkeiten organisieren.
+
+Wichtige Informationen zu Abholung oder Aufsicht müssen eindeutig geregelt sein.
+
+Das System darf eine Betreuung nicht automatisch als rechtlich oder fachlich geeignet kennzeichnen.
+
+### WP05-F004 – Kinderfreundliches Programm
+
+Es können eigene Programmpunkte hinzugefügt werden:
+
+- Kinderspiele
+- Bastelaktivitäten
+- Kinderdisco
+- Ruhezeiten
+- Kinderbuffet
+
+### WP05-F005 – Integration mit Catering und Sitzplan
+
+Bestätigte Kinder werden bei der Berechnung von Essensmengen und Sitzplatzbedarf berücksichtigt.
+
+Kinder können im Sitzplan ihren Familien oder gewünschten Tischen zugeordnet werden.
+
+### WP05-F006 – Datenschutz
+
+Besondere Sorgfalt gilt bei Informationen über Kinder. Gesundheitsbezogene Angaben wie Allergien werden nur erhoben, wenn erforderlich, und mit eingeschränkten Zugriffsrechten verarbeitet.
+
+Für den Gästekontext muss eine geeignete Einwilligungs- beziehungsweise Rechtsgrundlagenprüfung vorgesehen werden.
+
+## 6.3 Abnahmekriterien
+
+1. Ein Kind kann einer bestehenden Einladung zugeordnet werden.
+2. Die benötigte Anzahl an Hochstühlen wird berechnet.
+3. Kindergerichte werden im Cateringbedarf separat ausgewiesen.
+4. Betreuungspersonen und Betreuungszeiten können erfasst werden.
+5. Sensible Informationen sind nur für ausdrücklich berechtigte Personen sichtbar.
+6. Kinder werden bei der automatischen Tischplanung berücksichtigt.
+
+---
+
+# 7. Modul WP-06: Hochzeitsarchiv
+
+## 7.1 Zielsetzung
+
+Nach der Feier verwandelt sich die Hochzeitswebsite auf Wunsch des Brautpaares in ein digitales Erinnerungsarchiv.
+
+## 7.2 Funktionsumfang
+
+### WP06-F001 – Archivierungsassistent
+
+Das System bietet nach der Hochzeit einen geführten Prozess an.
+
+Das Brautpaar entscheidet, welche Inhalte übernommen werden.
+
+Beispielsweise:
+
+- Hochzeitsfotos
+- Videos
+- Gästebuch
+- Digitale Hochzeitspost
+- Hochzeitsgeschichte
+- Tagesablauf als Erinnerung
+- ausgewählte öffentliche Gästebeiträge
+
+Budgetdaten, Verträge und private Kontaktdaten werden nicht automatisch veröffentlicht.
+
+### WP06-F002 – Archivdesign
+
+Das Archiv kann aus unterschiedlichen Layoutvorlagen erstellt werden.
+
+Mögliche Bereiche:
+
+- Unsere Geschichte
+- Der Hochzeitstag
+- Fotogalerie
+- Videogalerie
+- Gästebuch
+- Unsere schönsten Momente
+
+### WP06-F003 – Chronologische Darstellung
+
+Inhalte können chronologisch angeordnet werden.
+
+Beispiel:
+
+Kennenlernen → Verlobung → Planung → Trauung → Feier → Hochzeitstage
+
+### WP06-F004 – Zugriffsschutz
+
+Mögliche Einstellungen:
+
+- Nur das Brautpaar
+- Eingeladene Personen
+- Geschützter Freigabelink
+- Öffentlich sichtbare Inhalte
+
+Ein privates Archiv darf nicht allein durch Kenntnis einer leicht erratbaren URL zugänglich sein.
+
+### WP06-F005 – Download und Datenexport
+
+Das Brautpaar kann ein Archivpaket herunterladen.
+
+Mögliche Bestandteile:
+
+- Originalfotos und Videos
+- Textnachrichten
+- Strukturierte Metadaten
+- Eine statische HTML-Erinnerungsseite
+
+Das Exportformat muss dokumentiert werden.
+
+### WP06-F006 – Langzeitarchivierung
+
+Das System unterscheidet zwischen:
+
+- Aktiver Hochzeitsplanung
+- Übergangszeit nach der Hochzeit
+- Archivmodus
+- Geplanter Löschung
+
+Speicherfristen und gegebenenfalls kostenpflichtige Archivoptionen werden transparent dargestellt.
+
+### WP06-F007 – Jubiläumsfunktionen
+
+Optional:
+
+- Freischaltung von Nachrichten am Jahrestag
+- Jubiläumserinnerungen
+- Neue Fotos hinzufügen
+- Digitale Zeitkapseln öffnen
+
+## 7.3 Abnahmekriterien
+
+1. Eine abgeschlossene Hochzeit kann in den Archivmodus wechseln.
+2. Das Paar entscheidet über die übernommenen Inhalte.
+3. Private Planungsinformationen bleiben geschützt.
+4. Das Archiv ist mobil nutzbar.
+5. Fotos und Videos sind herunterladbar.
+6. Das Archiv kann gelöscht werden.
+7. Freigegebene Inhalte behalten ihre jeweiligen Zugriffsrechte.
+8. Der Archivmodus darf bestehende Planungsdaten nicht unkontrolliert löschen.
+
+---
+
+# 8. Modulübergreifende Automatisierungen
+
+Die sechs Module dürfen nicht isoliert entwickelt werden.
+
+| Auslöser | Betroffene Funktionen | Vorgeschlagene Aktion |
+|---|---|---|
+| Angebot angenommen | Budget, Aufgaben | Kosten und Zahlungsfristen zur Übernahme anbieten |
+| Plan B aktiviert | Ablauf, Kontakte, Gäste | Geänderte Abläufe veröffentlichen und Benachrichtigungen vorbereiten |
+| Dienstleister fällt aus | Notfallmodus, Anbieter | Ersatzkontakte anzeigen und Aufgaben erzeugen |
+| Neues Kind bestätigt | Gästeliste, Catering, Sitzplan | Bedarf neu berechnen |
+| Neue Hochzeitspost | Moderation, Archiv | Nachricht prüfen und für spätere Archivierung vormerken |
+| Hochzeit abgeschlossen | Planung, Archiv | Archivierungsassistent anbieten |
+
+## 8.1 Ereignisorientierte Architektur
+
+Die interne Architektur sollte fachliche Ereignisse unterstützen.
+
+Beispiele:
+
+- `offer.analysis.completed`
+- `offer.accepted`
+- `weather.plan.activated`
+- `emergency.incident.created`
+- `guest.rsvp.updated`
+- `guest.message.submitted`
+- `guest.message.released`
+- `wedding.archive.created`
+
+Jedes Ereignis enthält mindestens eine eindeutige Ereignis-ID, eine Hochzeits-ID, einen Ereignistyp und einen Zeitstempel.
+
+Automatisierungen müssen wiederholte Ereignisse erkennen, damit beispielsweise Zahlungen oder Aufgaben nicht doppelt angelegt werden.
+
+---
+
+# 9. Vorgeschlagene Datenstruktur
+
+Die nachfolgenden Tabellen sind ein erster fachlicher Entwurf und noch kein vollständiges SQL-Datenbankschema.
+
+## 9.1 Gemeinsame Tabellen
+
+- `users`
+- `weddings`
+- `wedding_members`
+- `roles`
+- `guests`
+- `guest_invitations`
+- `vendors`
+- `vendor_bookings`
+- `budgets`
+- `budget_items`
+- `tasks`
+- `timeline_events`
+- `documents`
+- `media_assets`
+- `notifications`
+- `audit_logs`
+
+## 9.2 Neue Modultabellen
+
+| Modul | Tabellen |
+|---|---|
+| KI-Angebotsvergleich | `vendor_offers`, `offer_items`, `offer_extractions`, `offer_comparisons` |
+| Schlechtwetter-Plan B | `weather_scenarios`, `weather_thresholds`, `scenario_actions`, `scenario_activations` |
+| Notfallmodus | `emergency_contacts`, `emergency_incidents`, `emergency_procedures`, `vendor_alternatives` |
+| Hochzeitspost | `guest_messages`, `message_media`, `message_release_rules` |
+| Kinderplanung | `guest_children`, `childcare_sessions`, `childcare_assignments`, `child_equipment` |
+| Hochzeitsarchiv | `wedding_archives`, `archive_entries`, `archive_access_grants`, `anniversary_events` |
+
+## 9.3 Architekturregeln
+
+1. Alle hochzeitsbezogenen Daten werden einer `wedding_id` zugeordnet.
+2. Berechtigungen werden serverseitig geprüft.
+3. Medien werden über Referenzen verwaltet, nicht als große Binärdaten direkt in PostgreSQL.
+4. Vertrauliche Dokumente und öffentliche Galerieinhalte bleiben logisch getrennt.
+5. Es wird ein zentraler Benachrichtigungsdienst verwendet.
+6. KI-Verarbeitung erfolgt über austauschbare Dienste.
+7. Langlaufende Aufgaben werden über eine Job-Queue bearbeitet.
+8. Kritische Änderungen werden nachvollziehbar versioniert.
+
+---
+
+# 10. Nichtfunktionale Anforderungen
+
+## 10.1 Sicherheit
+
+- Durchgängige HTTPS-Verschlüsselung.
+- Sichere Authentifizierung und Sitzungsverwaltung.
+- Rollenbasierte Zugriffsprüfung.
+- Mandantentrennung zwischen Hochzeiten.
+- Schutz vor unautorisierten Dateizugriffen.
+- Rate-Limits für Gästelinks und Uploads.
+- Malware-Prüfung für hochgeladene Dokumente.
+- Regelmäßige Sicherheitsupdates und Backups.
+- Keine Verwendung privater Dokumentinhalte für KI-Modelltraining ohne gesonderte, wirksame Grundlage.
+
+## 10.2 Datenschutz
+
+- Datenminimierung.
+- Lösch- und Exportfunktionen.
+- Definierte Aufbewahrungsfristen.
+- Dokumentation der Verarbeitungszwecke und Rechtsgrundlagen.
+- Geeignete Verträge mit eingesetzten Auftragsverarbeitern.
+- Gesonderte Berücksichtigung von Minderjährigen, Bildrechten und sensiblen Angaben.
+- Überprüfung internationaler Datentransfers bei externen KI- und Cloud-Diensten.
+
+Die konkrete datenschutzrechtliche Ausgestaltung muss vor Produktivbetrieb geprüft werden.
+
+## 10.3 Bedienbarkeit
+
+- Mobile-first-Design.
+- Einheitliche Navigation.
+- Verständliche Fehlermeldungen.
+- Tastaturbedienbarkeit und gute Kontraste.
+- Möglichst barrierearme Nutzerführung.
+- Trennung zwischen öffentlichen Gästeansichten und internen Planungsbereichen.
+
+## 10.4 Zuverlässigkeit
+
+- Wiederholbare Hintergrundaufträge.
+- Überwachung fehlgeschlagener Prozesse.
+- Geprüfte Wiederherstellbarkeit von Backups.
+- Klare Anzeige veralteter Wetter- oder Dienstleisterdaten.
+- Nachvollziehbarer Versandstatus bei Benachrichtigungen.
+
+---
+
+# 11. Empfohlene Entwicklungsreihenfolge
+
+## Schritt 1 – Technische Grundlagen
+
+Benutzerkonten, Hochzeiten, Rollen, Dokumente, Medien, Gäste, Aufgaben, Budget und zentraler Ereignisdienst.
+
+## Schritt 2 – Erste integrierte Module
+
+Kinderplanung und digitale Hochzeitspost, da diese direkt auf Gästeliste und Medienverwaltung aufbauen.
+
+## Schritt 3 – Dokumentenintelligenz
+
+KI-Angebotsvergleich mit PDF-Verarbeitung, editierbarer Datenextraktion und Budgetintegration.
+
+## Schritt 4 – Operative Hochzeitssteuerung
+
+Plan-B-Szenarien und Notfallmodus auf Grundlage des gemeinsamen Ablaufplans.
+
+## Schritt 5 – Langfristige Kundenbindung
+
+Hochzeitsarchiv mit Freigabeverwaltung, Export und Jubiläumsfunktionen.
+
+---
+
+# 12. Definition of Done
+
+Ein Modul gilt erst dann als fertiggestellt, wenn:
+
+- alle Pflichtfunktionen implementiert sind;
+- automatische Tests für wesentliche Geschäftsregeln vorhanden sind;
+- Berechtigungen und Mandantentrennung geprüft wurden;
+- Fehlerfälle nachvollziehbar behandelt werden;
+- mobile Ansichten getestet wurden;
+- Datenexport und Löschverhalten berücksichtigt sind;
+- Schnittstellen dokumentiert wurden;
+- die definierten Abnahmekriterien erfüllt sind.
+
+**Ergebnis:** Diese sechs Module erweitern die Hochzeitsplattform von einem klassischen Planungstool zu einer durchgängigen Anwendung für Vorbereitung, Durchführung und Erinnerung an die Hochzeit.

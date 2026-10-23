@@ -1,0 +1,43 @@
+name: Lokale Grundlage prüfen
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Quellcode auschecken
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Künstliche lokale Umgebung vorbereiten
+        run: python3 scripts/dev.py setup
+      - name: Veröffentlichte Sicherheitsmeldungen prüfen
+        run: python3 scripts/audit_dependencies.py
+      - name: Gesperrte Container bauen
+        run: python3 scripts/dev.py build
+      - name: Code prüfen
+        run: docker compose --project-name wedding_local --env-file .env --file docker/compose.local.yml run --rm tools ruff check --no-cache .
+      - name: Sicherheits- und Funktionstests
+        run: python3 scripts/dev.py test
+      - name: Lokale Anwendung starten
+        run: python3 scripts/dev.py up
+      - name: Fehlende Migrationen ausschließen
+        run: docker compose --project-name wedding_local --env-file .env --file docker/compose.local.yml run --rm migrate python manage.py makemigrations --check --dry-run
+      - name: HTTP-Stack und Laufzeitrechte prüfen
+        run: |
+          python3 scripts/dev.py check
+          python3 scripts/smoke.py
+      - name: Eigene Testcontainer stoppen
+        if: always()
+        run: python3 scripts/dev.py down

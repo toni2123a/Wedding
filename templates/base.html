@@ -1,0 +1,37 @@
+{% load static %}
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="{% block description %}Gemeinsam geplant bringt eure Hochzeitsaufgaben, Zuständigkeiten und Termine an einen Ort.{% endblock %}">
+  <title>{% block title %}Hochzeitsplanung{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extra_styles %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#inhalt">Zum Inhalt</a>
+  {% block header %}
+  <header class="site-header">
+    <a class="wordmark" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">w.</span> Gemeinsam geplant</a>
+    {% if user.is_authenticated %}
+    <nav aria-label="Kontonavigation">
+      <a href="{% url 'wedding-list' %}">Meine Hochzeiten</a>
+      <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Abmelden</button></form>
+    </nav>
+    {% else %}
+    <nav aria-label="Seitennavigation"><a href="{% url 'landing' %}">Das Produkt</a></nav>
+    {% endif %}
+  </header>
+  {% endblock %}
+  {% block environment_notice %}
+  <div class="environment-note">Lokale Entwicklung <span aria-hidden="true">·</span> Nur künstliche Testdaten</div>
+  {% endblock %}
+  <main id="inhalt" class="page {% block page_class %}{% endblock %}">
+    {% if messages %}<div aria-live="polite">{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block footer %}<footer class="site-footer">Ein Ort für eure Planung. <span>Lokaler Entwicklungsstand 0.1</span></footer>{% endblock %}
+</body>
+</html>

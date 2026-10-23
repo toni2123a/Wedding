@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Anmeldung pausiert{% endblock %}
+{% block content %}<section class="panel compact-panel"><p class="eyebrow">Anmeldung</p><h1>Bitte kurz warten.</h1><p>Es gab zu viele Anmeldeversuche. Versucht es nach 15 Minuten erneut.</p><a href="{% url 'login' %}">Zur Anmeldung</a></section>{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Aufgaben · {{ wedding.title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'wedding-dashboard' wedding_id=wedding.id %}">← Zur Übersicht</a>
+<div class="page-heading"><div><p class="eyebrow">{{ wedding.title }}</p><h1>Die kleinen Schritte zählen.</h1></div>{% if can_plan %}<a class="button" href="{% url 'task-create' wedding_id=wedding.id %}">Neue Aufgabe <span aria-hidden="true">+</span></a>{% endif %}</div>
+<p class="intro-copy">{% if can_plan %}Was ansteht, wer sich kümmert und was schon geschafft ist.{% else %}Hier findest du die Aufgaben, die dir zugewiesen wurden.{% endif %}</p>
+<section class="task-list" aria-label="Aufgaben">
+{% for task in tasks %}<article class="panel task-card {% if task.is_done %}task-complete{% endif %}"><div class="task-content"><span class="status-label">{% if task.is_done %}Erledigt{% else %}Offen{% endif %}</span><h2>{{ task.title }}</h2>{% if task.description %}<p>{{ task.description|linebreaksbr }}</p>{% endif %}<div class="task-meta">{% if task.due_date %}<span>Bis {{ task.due_date|date:"d.m.Y" }}</span>{% endif %}{% if task.assigned_to %}<span>{{ task.assigned_to.user.first_name|default:"Zugewiesene Person" }}</span>{% endif %}</div></div>
+<form method="post" action="{% url 'task-status' wedding_id=wedding.id task_id=task.id %}">{% csrf_token %}<input type="hidden" name="version" value="{{ task.version }}"><input type="hidden" name="is_done" value="{% if task.is_done %}false{% else %}true{% endif %}"><button class="button button-secondary" type="submit">{% if task.is_done %}Wieder öffnen{% else %}Als erledigt markieren{% endif %}</button></form></article>
+{% empty %}<div class="panel empty-state"><h2>Platz für den ersten Schritt.</h2><p>Hier erscheinen eure Aufgaben, sobald sie eingetragen oder dir zugewiesen wurden.</p></div>{% endfor %}
+</section>
+{% if page.has_other_pages %}<nav class="pagination" aria-label="Aufgabenseiten">{% if page.has_previous %}<a href="?seite={{ page.previous_page_number }}">← Vorherige Seite</a>{% endif %}<span>Seite {{ page.number }} von {{ page.paginator.num_pages }}</span>{% if page.has_next %}<a href="?seite={{ page.next_page_number }}">Nächste Seite →</a>{% endif %}</nav>{% endif %}
+{% endblock %}

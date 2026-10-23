@@ -1,0 +1,157 @@
+name: wedding_local
+
+x-application: &application
+  build:
+    context: ..
+    dockerfile: docker/web.Dockerfile
+    target: runtime
+  image: wedding-local-web:0.1.0
+  environment: &application-environment
+    APP_ENV: local
+    DJANGO_SETTINGS_MODULE: config.settings.local
+    DJANGO_SECRET_KEY_FILE: /run/secrets/django_secret_key
+    DATABASE_HOST: db
+    DATABASE_NAME: wedding
+    DATABASE_USER: wedding_app
+    DATABASE_PASSWORD_FILE: /run/secrets/db_app_password
+  secrets:
+    - django_secret_key
+    - db_app_password
+  networks:
+    - backend
+  read_only: true
+  tmpfs:
+    - /tmp:size=96m,mode=1777,noexec,nosuid,nodev
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  pids_limit: 96
+  mem_limit: 512m
+  memswap_limit: 512m
+  cpus: 1.0
+  init: true
+  logging:
+    driver: local
+    options:
+      max-size: 5m
+      max-file: "2"
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:18-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets:
+      - db_admin_password
+      - db_app_password
+      - db_migrator_password
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./db/00-roles.sh:/docker-entrypoint-initdb.d/00-roles.sh:ro
+    networks:
+      - backend
+    command: ["postgres", "-c", "shared_buffers=128MB", "-c", "max_connections=40", "-c", "log_statement=none"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "2"
+
+  web:
+    <<: *application
+    ports:
+      - "127.0.0.1:${WEDDING_HTTP_PORT:-18080}:8000"
+    networks:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  migrate:
+    <<: *application
+    profiles: ["tools"]
+    environment:
+      <<: *application-environment
+      DATABASE_USER: wedding_migrator
+      DATABASE_PASSWORD_FILE: /run/secrets/db_migrator_password
+    secrets:
+      - django_secret_key
+      - db_migrator_password
+    command: ["python", "manage.py", "migrate", "--noinput"]
+
+  seed:
+    <<: *application
+    profiles: ["tools"]
+    environment:
+      <<: *application-environment
+      DATABASE_USER: wedding_migrator
+      DATABASE_PASSWORD_FILE: /run/secrets/db_migrator_password
+      DEMO_PASSWORD_FILE: /run/secrets/demo_password
+    secrets:
+      - django_secret_key
+      - db_migrator_password
+      - demo_password
+    command: ["python", "manage.py", "seed_demo"]
+
+  tools:
+    <<: *application
+    profiles: ["tools"]
+    build:
+      context: ..
+      dockerfile: docker/web.Dockerfile
+      target: development
+    image: wedding-local-tools:0.1.0
+    environment:
+      <<: *application-environment
+      DJANGO_SETTINGS_MODULE: config.settings.test
+      MIGRATOR_PASSWORD_FILE: /run/secrets/db_migrator_password
+      DEMO_PASSWORD_FILE: /run/secrets/demo_password
+    secrets:
+      - django_secret_key
+      - db_app_password
+      - db_migrator_password
+      - demo_password
+    command: ["python", "-m", "pytest", "-p", "no:cacheprovider"]
+    mem_limit: 768m
+    memswap_limit: 768m
+
+networks:
+  backend:
+    internal: true
+  frontend: {}
+
+volumes:
+  postgres_data: {}
+
+secrets:
+  django_secret_key:
+    file: ../secrets/local/django_secret_key
+  db_admin_password:
+    file: ../secrets/local/db_admin_password
+  db_migrator_password:
+    file: ../secrets/local/db_migrator_password
+  db_app_password:
+    file: ../secrets/local/db_app_password
+  demo_password:
+    file: ../secrets/local/demo_password

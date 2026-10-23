@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Gemeinsam geplant · Mehr Vorfreude auf eure Hochzeit{% endblock %}
+{% block description %}Plant eure Hochzeit gemeinsam. Behaltet Aufgaben, Zuständigkeiten und Termine im Blick und gebt euren Helfern einen eigenen Zugang.{% endblock %}
+{% block body_class %}marketing-body{% endblock %}
+{% block extra_styles %}<link rel="stylesheet" href="{% static 'css/landing.css' %}">{% endblock %}
+
+{% block header %}
+<header class="marketing-header marketing-container">
+  <a class="wordmark" href="{% url 'landing' %}" aria-label="Gemeinsam geplant, Startseite"><span class="brand-mark" aria-hidden="true">w.</span><span>Gemeinsam<br>geplant</span></a>
+  <nav class="marketing-nav" aria-label="Hauptnavigation">
+    <a class="section-link" href="#funktionen">Die Planung</a>
+    <a class="section-link" href="#ausblick">Was noch kommt</a>
+    <a class="section-link" href="#fragen">Fragen</a>
+    <a class="login-link" href="{% url 'login' %}">Anmelden</a>
+    <a class="button nav-cta" href="{% url 'wedding-list' %}">Zur Planung <span aria-hidden="true">↗</span></a>
+  </nav>
+</header>
+{% endblock %}
+
+{% block environment_notice %}{% endblock %}
+{% block page_class %}marketing-page{% endblock %}
+
+{% block content %}
+<section class="marketing-hero marketing-container" aria-labelledby="hero-heading">
+  <div class="hero-copy">
+    <p class="marketing-eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> Für euren großen Tag</p>
+    <h1 id="hero-heading">Mehr Vorfreude.<br>Weniger<br><em>Zettelwirtschaft.</em></h1>
+    <p class="hero-description">Eure Hochzeit verdient einen gemeinsamen Plan. Bringt Aufgaben, Zuständigkeiten und Termine an einen Ort. Und habt wieder mehr Kopf für das, worauf ihr euch freut.</p>
+    <div class="hero-actions">
+      <a class="button marketing-button" href="{% url 'wedding-list' %}">Eure Planung öffnen <span aria-hidden="true">↗</span></a>
+      <a class="quiet-link" href="#funktionen">Das steckt dahinter <span aria-hidden="true">↓</span></a>
+    </div>
+    <a class="privacy-note" href="#privat"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12v11H6z" stroke="currentColor" stroke-width="1.5"/><path d="M12 14v3" stroke="currentColor" stroke-width="1.5"/></svg>Euer persönlicher Planungsbereich</a>
+    <p class="availability-note">Gemeinsam geplant entsteht gerade. Die erste Version ist mit einem vorhandenen Zugang nutzbar.</p>
+  </div>
+
+  <figure class="hero-product" aria-labelledby="product-caption">
+    <div class="product-backdrop" aria-hidden="true"><span class="backdrop-word">ja.</span><span class="backdrop-rings"></span></div>
+    <div class="planner-preview" aria-hidden="true">
+      <div class="preview-toolbar"><span class="window-dots"><i></i><i></i><i></i></span><span>Ein Ort für euren Tag</span><span class="preview-toolbar-mark">w.</span></div>
+      <div class="preview-app">
+        <div class="preview-sidebar"><span class="preview-app-mark">w.</span><span class="preview-nav-item">Übersicht</span><span class="preview-nav-item preview-active">Aufgaben</span><span class="preview-sidebar-bottom">Zusammen<br>wird's euer Tag.</span></div>
+        <div class="preview-main">
+          <div class="preview-couple"><div><span class="preview-overline">18. September 2027</span><h2>Jana &amp; Noah</h2></div><span class="couple-monogram">J + N</span></div>
+          <p class="preview-intro">Ein Schritt nach dem anderen.</p>
+          <div class="preview-progress"><span><strong>2</strong> noch offen</span><span><strong>1</strong> schon geschafft</span></div>
+          <div class="preview-list-heading"><strong>Eure nächsten Schritte</strong><span>September</span></div>
+          <div class="preview-task preview-task-done"><span class="preview-check">✓</span><span><b>Location besichtigen</b><small>Gemeinsam erledigt</small></span><span class="preview-person person-jana">J</span></div>
+          <div class="preview-task"><span class="preview-check"></span><span><b>Einladungen abstimmen</b><small>Bis 15. März</small></span><span class="preview-person person-noah">N</span></div>
+          <div class="preview-task"><span class="preview-check"></span><span><b>Trauzeugen einbeziehen</b><small>Bis 22. März</small></span><span class="preview-person person-jana">J</span></div>
+          <div class="preview-add">+ &nbsp; Der nächste kleine Schritt</div>
+        </div>
+      </div>
+    </div>
+    <div class="floating-note" aria-hidden="true"><span class="note-tick">✓</span><div><strong>Ein guter Anfang.</strong><span>Alle wissen, was als Nächstes ansteht.</span></div></div>
+    <figcaption id="product-caption">Ein Blick in die Aufgabenplanung · Darstellung mit Beispieldaten</figcaption>
+  </figure>
+</section>
+
+<div class="benefit-strip marketing-container" aria-label="Das bringt euch die Planung">
+  <p><span aria-hidden="true">01</span> Ein gemeinsamer Überblick</p>
+  <p><span aria-hidden="true">02</span> Klare Zuständigkeiten</p>
+  <p><span aria-hidden="true">03</span> Ein Zugang für eure Helfer</p>
+</div>
+
+<section id="funktionen" class="feature-section marketing-container" aria-labelledby="features-heading">
+  <div class="section-introduction"><p class="marketing-eyebrow">Weniger im Kopf. Mehr miteinander.</p><h2 id="features-heading">Für all die kleinen Dinge,<br>die euren Tag groß machen.</h2><p>Wer kümmert sich um die Ringe? Wann sollen die Einladungen raus? Ein gemeinsamer Überblick hilft euch, die nächsten Schritte miteinander abzustimmen.</p></div>
+  <div class="feature-layout">
+    <div class="planning-note" aria-labelledby="planning-note-heading">
+      <div class="note-topline"><span>Euer gemeinsamer Plan</span><span aria-hidden="true">↗</span></div>
+      <h3 id="planning-note-heading">Was steht als<br>Nächstes an?</h3>
+      <div class="note-task"><span class="note-task-number">01</span><div><strong>Eine Aufgabe festhalten.</strong><p>Der Gedanke ist aufgeschrieben.</p></div></div>
+      <div class="note-task"><span class="note-task-number">02</span><div><strong>Die richtige Person zuweisen.</strong><p>Die Zuständigkeit ist geklärt.</p></div></div>
+      <div class="note-task"><span class="note-task-number">03</span><div><strong>Gemeinsam einen Haken setzen.</strong><p>Wieder ein Stück näher am Hochzeitstag.</p></div></div>
+      <div class="note-signature">Ein Schritt nach dem anderen.</div>
+    </div>
+    <div class="feature-explanations">
+      <article><span class="feature-index">01 / AUFGABEN</span><h3>Ein Gedanke weniger,<br>den ihr euch merken müsst.</h3><p>Sammelt eure Aufgaben, ergänzt Notizen und legt Termine fest. Offenes und Erledigtes bleiben sichtbar, auch wenn ihr an unterschiedlichen Tagen plant.</p></article>
+      <article><span class="feature-index">02 / ZUSAMMEN PLANEN</span><h3>Jeder weiß, wo er helfen kann.</h3><p>Ordnet Aufgaben einer Person aus eurem Planungsteam zu. Eure Trauzeugen sehen die Aufgaben, die für sie bestimmt sind.</p></article>
+      <article><span class="feature-index">03 / ÜBERBLICK</span><h3>Seht, was ihr schon geschafft habt.</h3><p>Öffnet eure Planung am Handy oder am Rechner. Der aktuelle Stand und die nächsten Termine sind an derselben Stelle zu finden.</p></article>
+      <a class="quiet-link" href="{% url 'wedding-list' %}">Zur Aufgabenplanung <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="privat" class="privacy-section" aria-labelledby="privacy-heading">
+  <div class="marketing-container privacy-layout">
+    <div><p class="marketing-eyebrow">Mit euren Menschen. In eurem Bereich.</p><h2 id="privacy-heading">Eure Planung ist<br><em>etwas Persönliches.</em></h2></div>
+    <div class="privacy-copy"><p>Die Produktseite ist für alle da. Eure Hochzeitsplanung ist an eine Anmeldung und eine passende Freigabe gebunden.</p><p>Brautpaar, Mitplaner und Trauzeugen haben unterschiedliche Zugänge. So helfen eure Menschen dort mit, wo sie gebraucht werden.</p><div class="privacy-roles" aria-label="Rollen im Planungsteam"><span>Brautpaar</span><span>Mitplaner</span><span>Trauzeugen</span></div><p class="privacy-footnote">Die Vorschau auf dieser Seite verwendet ausschließlich Beispieldaten.</p></div>
+  </div>
+</section>
+
+<section id="ablauf" class="how-section marketing-container" aria-labelledby="how-heading">
+  <div class="section-introduction"><p class="marketing-eyebrow">Ein Anfang, der sich leicht anfühlt</p><h2 id="how-heading">Von "Wir müssten mal"<br>zu "Ist schon erledigt".</h2></div>
+  <ol class="how-steps">
+    <li><span class="step-number">01</span><h3>Eure Planung öffnen.</h3><p>Meldet euch mit eurem persönlichen Zugang an und öffnet die Hochzeit, bei der ihr mitplant.</p></li>
+    <li><span class="step-number">02</span><h3>Die nächsten Schritte sammeln.</h3><p>Legt Aufgaben an, ergänzt Termine und teilt die Zuständigkeiten in eurem Team auf.</p></li>
+    <li><span class="step-number">03</span><h3>Zusammen vorankommen.</h3><p>Seht, was offen ist, setzt Haken und stimmt euch über den nächsten Schritt ab.</p></li>
+  </ol>
+</section>
+
+<section id="ausblick" class="roadmap-section" aria-labelledby="roadmap-heading">
+  <div class="marketing-container">
+    <div class="roadmap-heading"><div><p class="marketing-eyebrow">Das haben wir noch vor</p><h2 id="roadmap-heading">Ein gemeinsamer Ort.<br>Für immer mehr von eurer Hochzeit.</h2></div><p>Die Aufgabenplanung ist der Anfang. Diese weiteren Bausteine sind geplant und noch nicht verfügbar.</p></div>
+    <div class="roadmap-grid">
+      <article><span class="roadmap-number">01</span><div><h3>Gäste &amp; Familien</h3><p>Einladungen, Rückmeldungen, Sitzplätze und die Bedürfnisse eurer kleinen Gäste zusammen planen.</p></div></article>
+      <article><span class="roadmap-number">02</span><div><h3>Angebote &amp; Budget</h3><p>Angebote nachvollziehbar vergleichen und bestätigte Kosten im Budget festhalten.</p></div></article>
+      <article><span class="roadmap-number">03</span><div><h3>Ablauf &amp; Plan B</h3><p>Den Hochzeitstag vorbereiten und bei schlechtem Wetter einen abgestimmten Alternativplan zur Hand haben.</p></div></article>
+      <article><span class="roadmap-number">04</span><div><h3>Helfer &amp; Notfallkontakte</h3><p>Wichtige Ansprechpartner und vorbereitete Aufgaben für unerwartete Änderungen griffbereit halten.</p></div></article>
+      <article><span class="roadmap-number">05</span><div><h3>Digitale Hochzeitspost</h3><p>Persönliche Nachrichten eurer Gäste sammeln und zum gewünschten Zeitpunkt öffnen.</p></div></article>
+      <article><span class="roadmap-number">06</span><div><h3>Euer Erinnerungsarchiv</h3><p>Ausgewählte Momente nach der Feier aufbewahren und bewusst mit euren Menschen teilen.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section id="fragen" class="faq-section marketing-container" aria-labelledby="faq-heading">
+  <div><p class="marketing-eyebrow">Noch eine Frage?</p><h2 id="faq-heading">Gut zu wissen,<br>bevor ihr loslegt.</h2></div>
+  <div class="faq-list">
+    <details><summary>Kann ich die Planung schon ausprobieren?<span aria-hidden="true">+</span></summary><p>Mit einem vorhandenen Zugang könnt ihr die erste Version öffnen. Eine freie Registrierung gibt es noch nicht. Sie ist für den späteren öffentlichen Start vorgesehen.</p></details>
+    <details><summary>Was ist bereits nutzbar?<span aria-hidden="true">+</span></summary><p>Persönliche Anmeldung, die eigene Hochzeitsübersicht und die gemeinsame Aufgabenplanung mit Zuständigkeiten, Terminen und Status. Die unter "Was noch kommt" beschriebenen Bausteine folgen später.</p></details>
+    <details><summary>Wer kann unsere Hochzeitsplanung sehen?<span aria-hidden="true">+</span></summary><p>Für den Planungsbereich braucht es einen persönlichen Zugang und eine aktive Freigabe für die jeweilige Hochzeit. Trauzeugen sehen nur ihre zugewiesenen Aufgaben. Die öffentliche Produktseite zeigt keine Inhalte aus eurer Planung.</p></details>
+    <details><summary>Was wird Gemeinsam geplant kosten?<span aria-hidden="true">+</span></summary><p>Preise und Buchungsmöglichkeiten werden zum öffentlichen Start bekanntgegeben. Auf dieser Seite kann aktuell kein kostenpflichtiges Abonnement abgeschlossen werden.</p></details>
+  </div>
+</section>
+
+<section class="closing-section marketing-container" aria-labelledby="closing-heading">
+  <p class="marketing-eyebrow">Ein Plan für euch beide</p><h2 id="closing-heading">Der schönste Teil?<br><em>Ihr plant ihn zusammen.</em></h2><p>Fangt mit dem nächsten kleinen Schritt an.</p><a class="button marketing-button" href="{% url 'wedding-list' %}">Zur Hochzeitsplanung <span aria-hidden="true">↗</span></a><span class="closing-note">Anmeldung mit vorhandenem Zugang</span>
+</section>
+{% endblock %}
+
+{% block footer %}
+<footer class="marketing-footer marketing-container"><a class="wordmark" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">w.</span><span>Gemeinsam<br>geplant</span></a><p>Für einen Tag, der sich nach euch anfühlt.</p><nav aria-label="Fußnavigation"><a href="#funktionen">Die Planung</a><a href="#fragen">Fragen</a><a href="https://tsdigitalsolution.de" rel="noreferrer">tsdigitalsolution.de <span aria-hidden="true">↗</span></a></nav></footer>
+{% endblock %}

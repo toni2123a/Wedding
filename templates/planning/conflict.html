@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Aufgabe neu laden{% endblock %}
+{% block content %}<section class="panel compact-panel"><p class="eyebrow">Gemeinsame Planung</p><h1>Bitte den aktuellen Stand laden.</h1><p>Die Änderung konnte nicht übernommen werden. Die Aufgabe wurde möglicherweise inzwischen bearbeitet.</p><a class="button" href="{% url 'task-list' wedding_id=wedding.id %}">Aufgaben neu laden</a></section>{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ wedding.title }} · Hochzeitsplanung{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'wedding-list' %}">← Meine Hochzeiten</a>
+<div class="page-heading"><div><p class="eyebrow">{{ wedding.date|date:"d. F Y" }}</p><h1>{{ wedding.title }}</h1></div><span class="role-badge">{{ membership.get_role_display }}</span></div>
+<p class="intro-copy">Ein Schritt nach dem anderen. Hier ist der aktuelle Stand eurer Planung.</p>
+{% if can_tasks %}
+<section class="stats-grid" aria-label="Aufgabenübersicht"><div class="stat"><span class="stat-number">{{ open_tasks }}</span><span>offene Aufgaben</span></div><div class="stat"><span class="stat-number">{{ done_tasks }}</span><span>bereits erledigt</span></div><div class="stat date-stat"><span>{{ wedding.date|date:"d.m.Y" }}</span><span>Euer Hochzeitstag</span></div></section>
+<section class="panel section-panel" aria-labelledby="next-tasks"><div class="section-heading"><h2 id="next-tasks">Die nächsten Schritte</h2><a href="{% url 'task-list' wedding_id=wedding.id %}">Alle Aufgaben →</a></div>
+  {% for task in tasks %}<div class="task-preview"><span class="task-dot {% if task.is_done %}is-done{% endif %}" aria-hidden="true"></span><span>{{ task.title }}</span><span class="muted">{% if task.is_done %}Erledigt{% elif task.due_date %}{{ task.due_date|date:"d.m." }}{% else %}Ohne Termin{% endif %}</span></div>{% empty %}<p class="muted">Hier sind noch keine Aufgaben eingetragen.</p>{% endfor %}
+  {% if can_plan %}<a class="button button-secondary" href="{% url 'task-create' wedding_id=wedding.id %}">Aufgabe hinzufügen <span aria-hidden="true">+</span></a>{% endif %}
+</section>
+{% else %}<section class="panel section-panel"><h2>Willkommen bei {{ wedding.title }}.</h2><p>Dein Zugang enthält zurzeit keine internen Planungsbereiche. Weitere Ansichten werden dir gezielt freigegeben.</p></section>{% endif %}
+{% if recent_changes %}<section class="activity-section" aria-labelledby="activity-heading"><h2 id="activity-heading">Zuletzt geändert</h2>{% for event in recent_changes %}<p class="activity-row"><span>{{ event.get_action_display }}</span><time datetime="{{ event.created_at|date:'c' }}">{{ event.created_at|date:"d.m.Y, H:i" }}</time></p>{% endfor %}</section>{% endif %}
+{% endblock %}

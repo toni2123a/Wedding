@@ -1,0 +1,66 @@
+# Lokale und produktive Konfiguration
+.env
+.env.*
+!.env.example
+!.env.*.example
+secrets/
+credentials/
+
+# Schlüssel und private Zertifikatsdateien
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+
+# Kundendaten und Laufzeitdateien
+/data/
+/customer-data/
+/private/
+/uploads/
+/media/
+/quarantine/
+/exports/
+/backups/
+/logs/
+/tmp/
+/postgres-data/
+/redis-data/
+/restore-data/
+*.sql
+*.sql.gz
+*.sql.zst
+*.dump
+*.dump.gz
+*.dump.zst
+*.backup
+*.bak
+*.sqlite3
+*.log
+*.log.*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+/.cache/
+.coverage
+htmlcov/
+
+# Frontend und lokale Buildartefakte
+node_modules/
+/dist/
+/build/
+/staticfiles/
+
+# Betriebssystem und Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

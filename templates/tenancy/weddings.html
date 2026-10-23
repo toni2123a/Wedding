@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Meine Hochzeiten · Hochzeitsplanung{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Eure gemeinsame Planung</p><h1>Schön, dass du da bist{% if user.first_name %}, {{ user.first_name }}{% endif %}.</h1></div><span class="count-badge">{{ weddings|length }} {% if weddings|length == 1 %}Hochzeit{% else %}Hochzeiten{% endif %}</span></div>
+<p class="intro-copy">Öffne eine Hochzeit, bei der du mitplanst.</p>
+<section class="wedding-grid" aria-label="Freigegebene Hochzeiten">
+  {% for wedding in weddings %}
+  <a class="panel wedding-card" href="{% url 'wedding-dashboard' wedding_id=wedding.id %}">
+    <span class="eyebrow">{{ wedding.date|date:"d. F Y" }}</span>
+    <h2>{{ wedding.title }}</h2>
+    <div class="card-bottom"><span class="role-badge">{{ wedding.role_label }}</span><span>Planung öffnen <span aria-hidden="true">↗</span></span></div>
+  </a>
+  {% empty %}<div class="panel empty-state"><h2>Hier ist noch keine Hochzeit freigegeben.</h2><p>Du kannst eine Planung öffnen, sobald dir ein Zugang dafür zugewiesen wurde.</p></div>{% endfor %}
+</section>
+{% endblock %}
